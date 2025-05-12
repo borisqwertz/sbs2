@@ -1,0 +1,169 @@
+<!-- my attempt at creating a santorini sandbox -borisqwertz -->
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <title>SBS2 - Santorini Board Sandbox</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="css/mystyle.css">
+
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src="js/rwapfork.jquery.ui.touch-punch.js"></script>
+    <script src="js/dom-to-image.min.js"></script>
+    <script src="script21.js"></script>
+</head>
+
+<body>
+    <button id="importHistoryButton">experimental Import History</button>
+    <div class="buttonDiv">
+        <button id="screenShotButton" title="take a screenshot of the board">Screenshot</button>
+        <button id="userSaveButton" title="save current boardstate">💾 Save</button>
+        <button id="userLoadButton" title="load your save">🔄 Load</button>
+        <button id="writeURLButton" title="Writes boardstate and gods into URL">Write in URL</button>
+        <button id="loadBoardButton">Reload from URL</button>
+        <button id="resetButton" title="Resets board and URL">Reset</button>
+        <button id="helpButton" title="help">?</button>
+        <button id="toggleTouchButton">touchmode <input type="checkbox" id="toggleTouch"></button>
+        <div class="touchDiv"> </div>
+    </div>
+
+    <div class="row">
+        <div class="col-7 boardDiv">
+            <table id="gameBoardtable" class="board" oncontextmenu="return false">
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                    <th>&nbsp;</th>
+                </tr>
+                <tr>
+                    <th>5</th>
+                    <td id="A5" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="B5" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="C5" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="D5" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="E5" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <th>&nbsp;</th>
+                </tr>
+
+                <tr>
+                    <th>4</th>
+                    <td id="A4" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="B4" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="C4" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="D4" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="E4" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <th>&nbsp;</th>
+                </tr>
+
+                <tr>
+                    <th>3</th>
+                    <td id="A3" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="B3" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="C3" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="D3" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="E3" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <th>&nbsp;</th>
+                </tr>
+
+                <tr>
+                    <th>2</th>
+                    <td id="A2" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="B2" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="C2" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="D2" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="E2" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <th>&nbsp;</th>
+                </tr>
+
+                <tr>
+                    <th>1</th>
+                    <td id="A1" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="B1" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="C1" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <td id="D1" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone darkCell"></td>
+                    <td id="E1" data-d="0" data-b="0" data-w="0" data-t1="0" data-t2="0" data-t3="0" data-t4="0"
+                        class="dropZone"></td>
+                    <th>&nbsp;</th>
+                </tr>
+                <tr>
+                    <th>&nbsp;</th>
+                    <th>A</th>
+                    <th>B</th>
+                    <th>C</th>
+                    <th>D</th>
+                    <th>E</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="col-5 toolbox">
+            <br>
+            <div class="col-12">
+                <div class="figDiv">
+
+                    <img src="images/Wm.svg" alt="Wm" id="Wm" class="figures" data-w="Wm">
+                    <img src="images/Wf.svg" alt="Wf" id="Wf" class="figures" data-w="Wf">
+                    <img src="images/WT.svg" alt="Wt" id="Wt" class="figures" data-t="Wt">
+
+                    <img src="images/Bm.svg" alt="Bm" id="Bm" class="figures" data-w="Bm">
+                    <img src="images/Bf.svg" alt="Bf" id="Bf" class="figures" data-w="Bf">
+                    <img src="images/BT.svg" alt="Bt" id="Bt" class="figures" data-t="Bt">
+
+                    <img src="images/Rm.svg" alt="Rm" id="Rm" class="figures" data-w="Rm">
+                    <img src="images/Rf.svg" alt="Rf" id="Rf" class="figures" data-w="Rf">
+                    <img src="images/RT.svg" alt="Rt" id="Rt" class="figures" data-t="Rt">
+
+                    <img src="images/Ym.svg" alt="Ym" id="Ym" class="figures" data-w="Ym">
+                    <img src="images/Yf.svg" alt="Yf" id="Yf" class="figures" data-w="Yf">
+                    <img src="images/YT.svg" alt="Yt" id="Yt" class="figures" data-t="Yt">
+
+                </div>
+                <div id="historyPanel">
+                    <h4 style="margin-top: 0;"> <button id="copyHistoryButton">Copy History</button> <button
+                            id="backButton">Back</button>
+                        <button id="forthButton">Forward</button>
+                        <button id="startButton">Start</button>
+                        <button id="endButton">End</button>
+                    </h4>
+                    <div id="historyItems"></div>
+                </div>
+            </div>      
+        </div>
+
+    </div>
+
+    <div style="display: none;"> <img src="images/buildLevel.svg" alt=""> <img src="images/dome.svg"> </div>
+</body>
