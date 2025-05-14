@@ -18,17 +18,30 @@
 </head>
 
 <body>
-    <button id="importHistoryButton">experimental Import History</button>
-    <div class="buttonDiv">
-        <button id="screenShotButton" title="take a screenshot of the board">Screenshot</button>
-        <button id="userSaveButton" title="save current boardstate">💾 Save</button>
-        <button id="userLoadButton" title="load your save">🔄 Load</button>
-        <button id="writeURLButton" title="Writes boardstate and gods into URL">Write in URL</button>
-        <button id="loadBoardButton">Reload from URL</button>
-        <button id="resetButton" title="Resets board and URL">Reset</button>
-        <button id="helpButton" title="help">?</button>
-        <button id="toggleTouchButton">touchmode <input type="checkbox" id="toggleTouch"></button>
-        <div class="touchDiv"> </div>
+    <div class="buttonDiv"></div>
+    <button id="importHistoryButton" title="import your copied history">import history</button>
+    <!-- <button id="importBGAButton">BGA Replay</button> -->
+
+    <button id="screenShotButton" title="take a screenshot of the board"><svg xmlns="http://www.w3.org/2000/svg"
+            width="12" height="12" fill="currentColor" class="bi bi-image" viewBox="0 0 16 16">
+            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+            <path
+                d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z" />
+        </svg></button>
+    <button id="screenShotNoCoordsButton" title="take a screenshot without coordinates"><svg
+            xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-image"
+            viewBox="0 0 16 16">
+            <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+            <path
+                d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1z" />
+        </svg> <del>A B C D E</del></button>
+    <button id="userSaveButton" title="temp. save current boardstate">mark turn</button>
+    <button id="userLoadButton" title="load your save">load turn</button>
+    <button id="writeURLButton" title="Writes boardstate and gods into URL">write in URL</button>
+    <button id="loadBoardButton">reload from URL</button>
+    <button id="resetButton" title="Resets board and URL">reset</button>
+    <button id="helpButton" title="help">?</button>
+       <div class="touchDiv">  <button id="toggleTouchButton">touchmode <input type="checkbox" id="toggleTouch"></button></div>
     </div>
 
     <div class="row">
@@ -152,15 +165,34 @@
 
                 </div>
                 <div id="historyPanel">
-                    <h4 style="margin-top: 0;"> <button id="copyHistoryButton">Copy History</button> <button
-                            id="backButton">Back</button>
-                        <button id="forthButton">Forward</button>
-                        <button id="startButton">Start</button>
-                        <button id="endButton">End</button>
+                    <h4 style="margin-top: 0;"> <button id="copyHistoryButton">Copy History</button>
+                       <button id="startButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                fill="currentColor" class="bi bi-skip-backward-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5" />
+                            </svg></button>
+                        <button id="backButton"> <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                                <g transform="scale(-1,1) translate(-16,0)">
+                                    <path
+                                        d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
+                                </g>
+                            </svg></button>
+                        <button id="forthButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                fill="currentColor" class="bi bi-play-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
+                            </svg></button>
+                        
+                        <button id="endButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                fill="currentColor" class="bi bi-skip-forward-fill" viewBox="0 0 16 16">
+                                <path
+                                    d="M15.5 3.5a.5.5 0 0 1 .5.5v8a.5.5 0 0 1-1 0V8.753l-6.267 3.636c-.54.313-1.233-.066-1.233-.697v-2.94l-6.267 3.636C.693 12.703 0 12.324 0 11.693V4.308c0-.63.693-1.01 1.233-.696L7.5 7.248v-2.94c0-.63.693-1.01 1.233-.696L15 7.248V4a.5.5 0 0 1 .5-.5" />
+                            </svg></button>
                     </h4>
                     <div id="historyItems"></div>
                 </div>
-            </div>      
+            </div>
         </div>
 
     </div>

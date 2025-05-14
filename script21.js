@@ -69,11 +69,11 @@ function setupEventHandlers() {
     $("#startButton").click(goToStart);
     $("#endButton").click(goToEnd);
     $("#copyHistoryButton").click(copyHistory);
- $("#screenShotButton").click(screenshotBoard);
-
+    $("#screenShotButton").click(screenshotBoard);
+    $("#screenShotNoCoordsButton").click(screenshotBoardNoCoords);
 
     $("#importHistoryButton").click(function () {
-        const history = prompt("experimental - Paste history string:");
+        const history = prompt("(experimental) paste copied history:");
         if (history) {
             // Normalize input
             const normalized = history
@@ -82,6 +82,13 @@ function setupEventHandlers() {
                 .trim();
 
             importHistory(normalized);
+        }
+    });
+
+    $("#importBGAButton").click(function () {
+        const history = prompt("(experimental) paste full bga replay (from STRG+A STRG+C):");
+        if (history) {
+            importFromBGA(history);
         }
     });
 
@@ -211,13 +218,13 @@ function handleUserSave() {
         updateHistory(currentState);
     }
 
-    logAction("Game state saved");
-    showFeedback("#userSaveButton", `${historyIndex}. ${gMessage[historyIndex]}`, 'Save');
+
+    showFeedback("#userSaveButton", `${historyIndex}. ${gMessage[historyIndex]}`, 'mark turn');
+    showFeedback("#userLoadButton", `-> ${historyIndex}. ${gMessage[historyIndex]}`, `-> ${historyIndex}. ${gMessage[historyIndex]}`);
 }
 
 function handleUserLoad() {
     if (!userSavedBoard) {
-        logAction("No saved state to load");
         return;
     }
 
@@ -230,9 +237,6 @@ function handleUserLoad() {
         updateHistory(userSavedBoard);
         drawTestBoard(userSavedBoard);
     }
-
-    logAction("Game state loaded");
-    showFeedback("#userLoadButton", `${historyIndex}. ${gMessage[historyIndex]}`, "Load");
 }
 
 function showFeedback(selector, tempText, originalText) {
@@ -768,7 +772,7 @@ function copyHistory() {
     // Replace line breaks/tabs with space // Collapse multiple spaces // Trim whitespace // Remove leading "0. "
     let str = $('#historyItems').text().replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim().replace(/^0\.\s+/, '');
     navigator.clipboard.writeText(str);
-    showFeedback("#copyHistoryButton", "Copied", "Board History");
+    showFeedback("#copyHistoryButton", "Copied", "Copy History");
 }
 
 
@@ -1011,16 +1015,159 @@ function importHistory(historyString) {
 
 function screenshotBoard() {
     const element = document.getElementById('gameBoardtable');
+    const now = new Date();
+    let name = "sbs " + now.toLocaleString() + ".png";
+
 
     domtoimage.toPng(element)
         .then(function (dataUrl) {
             // Create a download link
             const link = document.createElement('a');
-            link.download = 'sbs2.png';
+            link.download = name;
             link.href = dataUrl;
             link.click();
+            $("th").css("background-color", "#1a1a1a").css("color", "#e0e0e0");
         })
         .catch(function (error) {
             console.error('Error capturing element:', error);
+            $("th").css("background-color", "#1a1a1a").css("color", "#e0e0e0");
         });
+
 }
+
+function screenshotBoardNoCoords() {
+    $("th").css("background-color", "transparent").css("color", "transparent");
+    screenshotBoard();
+}
+
+function importFromBGA(bgaReplay) {
+    boardHistory = [""];
+    gMessage = [""];
+    historyIndex = 0;
+
+    const lines = bgaReplay.split('\n');
+    let historyString = '';
+    let playerColors = {};
+    let workerCount = {
+        blue: { femalePlaced: false, count: 0 },
+        white: { femalePlaced: false, count: 0 }
+    };
+    let actionCount = 0;
+
+    // Enhanced regex patterns
+    const CONTROL_REGEX = /(.+)\scontrols\s(the\s)?(blue|white)\sworkers?/i;
+    const MOVE_HEADER_REGEX = /^Move\s+\d+.*:/i;
+    const ACTION_REGEX = /^(.*?)\s+(places|moves|builds|uses|removes|dome)/i;
+    const CELL_REGEX = /([A-Ea-e]\s*[1-5])/gi;
+    const LEVEL_REGEX = /level\s+(\d+)/i;
+    const DOME_REGEX = /dome/i;
+
+    let currentPlayer = null;
+    let inMoveBlock = false;
+
+    lines.forEach(line => {
+        line = line.trim();
+        if (!line) return;
+
+        // 1. Detect player colors
+        const controlMatch = line.match(CONTROL_REGEX);
+        if (controlMatch) {
+            const [, player, , color] = controlMatch;
+            playerColors[color.toLowerCase()] = player.trim();
+            console.log(`Player association: ${player} -> ${color}`);
+            return;
+        }
+
+        // 2. Detect move blocks
+        if (MOVE_HEADER_REGEX.test(line)) {
+            inMoveBlock = true;
+            currentPlayer = null;
+            console.log(`\nProcessing move block: ${line}`);
+            return;
+        }
+
+        if (!inMoveBlock) return;
+
+        // 3. Parse actions within move blocks
+        const actionMatch = line.match(ACTION_REGEX);
+        if (!actionMatch) return;
+
+        const [, playerRaw, actionType] = actionMatch;
+        const player = playerRaw.replace(/[^a-zA-Z\s]/g, '').trim(); // Clean player name
+        currentPlayer = currentPlayer || player;
+
+        console.log(`Processing action: ${actionType} by ${player}`);
+
+        try {
+            const color = getPlayerColor(currentPlayer, playerColors);
+            let action = null;
+
+            switch (actionType.toLowerCase()) {
+                case 'places':
+                    const cells = line.match(CELL_REGEX);
+                    if (cells?.[0]) {
+                        const cell = cells[0].replace(/\s/g, '').toUpperCase();
+                        const workerType = getWorkerType(color, workerCount);
+                        action = `${cell}-${workerType}`;
+                    }
+                    break;
+
+                case 'moves':
+                    const moveCells = line.match(CELL_REGEX);
+                    if (moveCells?.length === 2) {
+                        const from = moveCells[0].replace(/\s/g, '').toUpperCase();
+                        const to = moveCells[1].replace(/\s/g, '').toUpperCase();
+                        action = `${from}-${to}`;
+                    }
+                    break;
+
+                case 'builds':
+                case 'dome':
+                    const buildCell = line.match(CELL_REGEX)?.[0]?.replace(/\s/g, '').toUpperCase();
+                    if (buildCell) {
+                        const isDome = DOME_REGEX.test(line);
+                        const level = line.match(LEVEL_REGEX)?.[1] || '1';
+                        action = isDome ?
+                            `${buildCell}(X)` :
+                            `${buildCell}(${Math.min(3, level)})`; // Cap at level 3
+                    }
+                    break;
+            }
+
+            if (action) {
+                historyString += `${++actionCount}. ${action} `;
+                console.log(`Added action: ${actionCount}. ${action}`);
+            }
+        } catch (e) {
+            console.error(`Error processing line: ${line}`, e);
+        }
+    });
+
+    console.log('Final history string:', historyString);
+    importHistory(historyString.trim());
+
+    // Helper functions
+    function getPlayerColor(player, colors) {
+        return Object.entries(colors).find(([_, name]) =>
+            name.toLowerCase() === player.toLowerCase()
+        )?.[0] || 'blue';
+    }
+
+    function getWorkerType(color, counts) {
+        const team = counts[color] || counts.blue;
+        if (!team.femalePlaced) {
+            team.femalePlaced = true;
+            return color === 'blue' ? 'Bf' : 'Wf';
+        }
+        return color === 'blue' ? 'Bm' : 'Wm';
+    }
+}
+
+
+
+/*
+improve reset
+better buttonnames 
+help text
+css
+*/ 
