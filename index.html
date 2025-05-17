@@ -18,7 +18,12 @@
 </head>
 
 <body>
-    <div class="buttonDiv"></div>
+    
+   <div id="helpDiv" style="display: none;"><strong>Hotkeys:</strong>
+        <!-- <kbd>Ctrl+Z/Y</kbd> Undo/Redo · -->
+        <kbd>←/→ or a/d or backspace/enter or (mousewheelUp/Down over board or turns)</kbd> back/forth ·
+        <kbd>↑/↓ or w/s or Home/End</kbd> start/end   
+      </div>
     <button id="importHistoryButton" title="import your copied history">import history</button>
     <!-- <button id="importBGAButton">BGA Replay</button> -->
 
@@ -41,8 +46,12 @@
     <button id="loadBoardButton">reload from URL</button>
     <button id="resetButton" title="Resets board and URL">reset</button>
     <button id="helpButton" title="help">?</button>
-       <div class="touchDiv">  <button id="toggleTouchButton">touchmode <input type="checkbox" id="toggleTouch"></button></div>
+    <div class="touchDiv"> <button id="toggleTouchButton">touchmode <input type="checkbox" id="toggleTouch"></button>
     </div>
+    
+
+    
+
 
     <div class="row">
         <div class="col-7 boardDiv">
@@ -166,7 +175,7 @@
                 </div>
                 <div id="historyPanel">
                     <h4 style="margin-top: 0;"> <button id="copyHistoryButton">Copy History</button>
-                       <button id="startButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                        <button id="startButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                 fill="currentColor" class="bi bi-skip-backward-fill" viewBox="0 0 16 16">
                                 <path
                                     d="M.5 3.5A.5.5 0 0 0 0 4v8a.5.5 0 0 0 1 0V8.753l6.267 3.636c.54.313 1.233-.066 1.233-.697v-2.94l6.267 3.636c.54.314 1.233-.065 1.233-.696V4.308c0-.63-.693-1.01-1.233-.696L8.5 7.248v-2.94c0-.63-.692-1.01-1.233-.696L1 7.248V4a.5.5 0 0 0-.5-.5" />
@@ -183,7 +192,7 @@
                                 <path
                                     d="m11.596 8.697-6.363 3.692c-.54.313-1.233-.066-1.233-.697V4.308c0-.63.692-1.01 1.233-.696l6.363 3.692a.802.802 0 0 1 0 1.393" />
                             </svg></button>
-                        
+
                         <button id="endButton"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
                                 fill="currentColor" class="bi bi-skip-forward-fill" viewBox="0 0 16 16">
                                 <path

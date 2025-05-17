@@ -63,6 +63,8 @@ function setupEventHandlers() {
     $("#userLoadButton").click(handleUserLoad);
     $("#historySaveButton").click(() => saveBoardstate(boardHistory));
 
+    $("#helpButton").click(showHelp);
+
     // History navigation
     $("#backButton").click(() => navigateHistory(-1));
     $("#forthButton").click(() => navigateHistory(1));
@@ -73,7 +75,7 @@ function setupEventHandlers() {
     $("#screenShotNoCoordsButton").click(screenshotBoardNoCoords);
 
     $("#importHistoryButton").click(function () {
-        const history = prompt("(experimental) paste copied history:");
+        const history = prompt("(experimental/broken token movement) paste copied history:");
         if (history) {
             // Normalize input
             const normalized = history
@@ -141,22 +143,6 @@ function handleHotkeys(e) {
 
     // Navigation
     switch (key) {
-        case 'z':
-            if (ctrlCmd) {
-                e.preventDefault();
-                $("#backButton").click();
-                showFeedback("#backButton", "⏪ Undone", "Back");
-            }
-            break;
-
-        case 'y':
-            if (ctrlCmd) {
-                e.preventDefault();
-                $("#forthButton").click();
-                showFeedback("#forthButton", "⏩ Redone", "Forward");
-            }
-            break;
-
         case 'a':
         case 'arrowleft':
         case 'backspace':
@@ -186,26 +172,26 @@ function handleHotkeys(e) {
             break;
     }
 
-    // Save/Load
-    if (ctrlCmd) {
-        switch (key) {
-            case 's':
-                e.preventDefault();
-                $("#userSaveButton").click();
-                break;
+    // // Save/Load
+    // if (ctrlCmd) {
+    //     switch (key) {
+    //         case 's':
+    //             e.preventDefault();
+    //             $("#userSaveButton").click();
+    //             break;
 
-            case 'l':
-                e.preventDefault();
-                $("#userLoadButton").click();
-                break;
+    //         case 'l':
+    //             e.preventDefault();
+    //             $("#userLoadButton").click();
+    //             break;
 
-            // case 'h':
-            //     e.preventDefault();
-            //     $('#historyPanel').toggle();
+    //         // case 'h':
+    //         //     e.preventDefault();
+    //         //     $('#historyPanel').toggle();
 
-            //     break;
-        }
-    }
+    //         //     break;
+    //     }
+    // }
 }
 
 
@@ -1040,130 +1026,134 @@ function screenshotBoardNoCoords() {
     screenshotBoard();
 }
 
-function importFromBGA(bgaReplay) {
-    boardHistory = [""];
-    gMessage = [""];
-    historyIndex = 0;
+// function importFromBGA(bgaReplay) {
+//     boardHistory = [""];
+//     gMessage = [""];
+//     historyIndex = 0;
 
-    const lines = bgaReplay.split('\n');
-    let historyString = '';
-    let playerColors = {};
-    let workerCount = {
-        blue: { femalePlaced: false, count: 0 },
-        white: { femalePlaced: false, count: 0 }
-    };
-    let actionCount = 0;
+//     const lines = bgaReplay.split('\n');
+//     let historyString = '';
+//     let playerColors = {};
+//     let workerCount = {
+//         blue: { femalePlaced: false, count: 0 },
+//         white: { femalePlaced: false, count: 0 }
+//     };
+//     let actionCount = 0;
 
-    // Enhanced regex patterns
-    const CONTROL_REGEX = /(.+)\scontrols\s(the\s)?(blue|white)\sworkers?/i;
-    const MOVE_HEADER_REGEX = /^Move\s+\d+.*:/i;
-    const ACTION_REGEX = /^(.*?)\s+(places|moves|builds|uses|removes|dome)/i;
-    const CELL_REGEX = /([A-Ea-e]\s*[1-5])/gi;
-    const LEVEL_REGEX = /level\s+(\d+)/i;
-    const DOME_REGEX = /dome/i;
+//     // Enhanced regex patterns
+//     const CONTROL_REGEX = /(.+)\scontrols\s(the\s)?(blue|white)\sworkers?/i;
+//     const MOVE_HEADER_REGEX = /^Move\s+\d+.*:/i;
+//     const ACTION_REGEX = /^(.*?)\s+(places|moves|builds|uses|removes|dome)/i;
+//     const CELL_REGEX = /([A-Ea-e]\s*[1-5])/gi;
+//     const LEVEL_REGEX = /level\s+(\d+)/i;
+//     const DOME_REGEX = /dome/i;
 
-    let currentPlayer = null;
-    let inMoveBlock = false;
+//     let currentPlayer = null;
+//     let inMoveBlock = false;
 
-    lines.forEach(line => {
-        line = line.trim();
-        if (!line) return;
+//     lines.forEach(line => {
+//         line = line.trim();
+//         if (!line) return;
 
-        // 1. Detect player colors
-        const controlMatch = line.match(CONTROL_REGEX);
-        if (controlMatch) {
-            const [, player, , color] = controlMatch;
-            playerColors[color.toLowerCase()] = player.trim();
-            console.log(`Player association: ${player} -> ${color}`);
-            return;
-        }
+//         // 1. Detect player colors
+//         const controlMatch = line.match(CONTROL_REGEX);
+//         if (controlMatch) {
+//             const [, player, , color] = controlMatch;
+//             playerColors[color.toLowerCase()] = player.trim();
+//             console.log(`Player association: ${player} -> ${color}`);
+//             return;
+//         }
 
-        // 2. Detect move blocks
-        if (MOVE_HEADER_REGEX.test(line)) {
-            inMoveBlock = true;
-            currentPlayer = null;
-            console.log(`\nProcessing move block: ${line}`);
-            return;
-        }
+//         // 2. Detect move blocks
+//         if (MOVE_HEADER_REGEX.test(line)) {
+//             inMoveBlock = true;
+//             currentPlayer = null;
+//             console.log(`\nProcessing move block: ${line}`);
+//             return;
+//         }
 
-        if (!inMoveBlock) return;
+//         if (!inMoveBlock) return;
 
-        // 3. Parse actions within move blocks
-        const actionMatch = line.match(ACTION_REGEX);
-        if (!actionMatch) return;
+//         // 3. Parse actions within move blocks
+//         const actionMatch = line.match(ACTION_REGEX);
+//         if (!actionMatch) return;
 
-        const [, playerRaw, actionType] = actionMatch;
-        const player = playerRaw.replace(/[^a-zA-Z\s]/g, '').trim(); // Clean player name
-        currentPlayer = currentPlayer || player;
+//         const [, playerRaw, actionType] = actionMatch;
+//         const player = playerRaw.replace(/[^a-zA-Z\s]/g, '').trim(); // Clean player name
+//         currentPlayer = currentPlayer || player;
 
-        console.log(`Processing action: ${actionType} by ${player}`);
+//         console.log(`Processing action: ${actionType} by ${player}`);
 
-        try {
-            const color = getPlayerColor(currentPlayer, playerColors);
-            let action = null;
+//         try {
+//             const color = getPlayerColor(currentPlayer, playerColors);
+//             let action = null;
 
-            switch (actionType.toLowerCase()) {
-                case 'places':
-                    const cells = line.match(CELL_REGEX);
-                    if (cells?.[0]) {
-                        const cell = cells[0].replace(/\s/g, '').toUpperCase();
-                        const workerType = getWorkerType(color, workerCount);
-                        action = `${cell}-${workerType}`;
-                    }
-                    break;
+//             switch (actionType.toLowerCase()) {
+//                 case 'places':
+//                     const cells = line.match(CELL_REGEX);
+//                     if (cells?.[0]) {
+//                         const cell = cells[0].replace(/\s/g, '').toUpperCase();
+//                         const workerType = getWorkerType(color, workerCount);
+//                         action = `${cell}-${workerType}`;
+//                     }
+//                     break;
 
-                case 'moves':
-                    const moveCells = line.match(CELL_REGEX);
-                    if (moveCells?.length === 2) {
-                        const from = moveCells[0].replace(/\s/g, '').toUpperCase();
-                        const to = moveCells[1].replace(/\s/g, '').toUpperCase();
-                        action = `${from}-${to}`;
-                    }
-                    break;
+//                 case 'moves':
+//                     const moveCells = line.match(CELL_REGEX);
+//                     if (moveCells?.length === 2) {
+//                         const from = moveCells[0].replace(/\s/g, '').toUpperCase();
+//                         const to = moveCells[1].replace(/\s/g, '').toUpperCase();
+//                         action = `${from}-${to}`;
+//                     }
+//                     break;
 
-                case 'builds':
-                case 'dome':
-                    const buildCell = line.match(CELL_REGEX)?.[0]?.replace(/\s/g, '').toUpperCase();
-                    if (buildCell) {
-                        const isDome = DOME_REGEX.test(line);
-                        const level = line.match(LEVEL_REGEX)?.[1] || '1';
-                        action = isDome ?
-                            `${buildCell}(X)` :
-                            `${buildCell}(${Math.min(3, level)})`; // Cap at level 3
-                    }
-                    break;
-            }
+//                 case 'builds':
+//                 case 'dome':
+//                     const buildCell = line.match(CELL_REGEX)?.[0]?.replace(/\s/g, '').toUpperCase();
+//                     if (buildCell) {
+//                         const isDome = DOME_REGEX.test(line);
+//                         const level = line.match(LEVEL_REGEX)?.[1] || '1';
+//                         action = isDome ?
+//                             `${buildCell}(X)` :
+//                             `${buildCell}(${Math.min(3, level)})`; // Cap at level 3
+//                     }
+//                     break;
+//             }
 
-            if (action) {
-                historyString += `${++actionCount}. ${action} `;
-                console.log(`Added action: ${actionCount}. ${action}`);
-            }
-        } catch (e) {
-            console.error(`Error processing line: ${line}`, e);
-        }
-    });
+//             if (action) {
+//                 historyString += `${++actionCount}. ${action} `;
+//                 console.log(`Added action: ${actionCount}. ${action}`);
+//             }
+//         } catch (e) {
+//             console.error(`Error processing line: ${line}`, e);
+//         }
+//     });
 
-    console.log('Final history string:', historyString);
-    importHistory(historyString.trim());
+//     console.log('Final history string:', historyString);
+//     importHistory(historyString.trim());
 
-    // Helper functions
-    function getPlayerColor(player, colors) {
-        return Object.entries(colors).find(([_, name]) =>
-            name.toLowerCase() === player.toLowerCase()
-        )?.[0] || 'blue';
-    }
+//     // Helper functions
+//     function getPlayerColor(player, colors) {
+//         return Object.entries(colors).find(([_, name]) =>
+//             name.toLowerCase() === player.toLowerCase()
+//         )?.[0] || 'blue';
+//     }
 
-    function getWorkerType(color, counts) {
-        const team = counts[color] || counts.blue;
-        if (!team.femalePlaced) {
-            team.femalePlaced = true;
-            return color === 'blue' ? 'Bf' : 'Wf';
-        }
-        return color === 'blue' ? 'Bm' : 'Wm';
-    }
-}
+//     function getWorkerType(color, counts) {
+//         const team = counts[color] || counts.blue;
+//         if (!team.femalePlaced) {
+//             team.femalePlaced = true;
+//             return color === 'blue' ? 'Bf' : 'Wf';
+//         }
+//         return color === 'blue' ? 'Bm' : 'Wm';
+//     }
+// }
 
 
+
+function showHelp() {
+    $("#helpDiv").toggle()
+};
 
 /*
 improve reset
