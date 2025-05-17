@@ -637,13 +637,13 @@ function saveBoardstate(target = {}) {
         });
     });
 
-    // Save player names
-    for (let i = 1; i <= 4; i++) {
-        const playerName = $(`#p${i}Button`).text();
-        if (playerName !== defaultPlayerNames[i - 1]) {
-            params.set(`p${i}`, playerName);
-        }
-    }
+    // // Save player names
+    // for (let i = 1; i <= 4; i++) {
+    //     const playerName = $(`#p${i}Button`).text();
+    //     if (playerName !== defaultPlayerNames[i - 1]) {
+    //         params.set(`p${i}`, playerName);
+    //     }
+    // }
 
     const stateString = params.toString();
 
