@@ -767,8 +767,14 @@ function copyHistory() {
  */
 function goToStart() {
     if (boardHistory.length > 0) {
-        historyIndex = 0;
-        drawTestBoard(boardHistory[0]);
+        if (gMessage[1] === "url") {
+            historyIndex = 1;
+            drawTestBoard(boardHistory[1]);
+        }
+        else {
+            historyIndex = 0;
+            drawTestBoard(boardHistory[0]);
+        }
     }
 }
 
